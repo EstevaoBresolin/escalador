@@ -1,39 +1,117 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+// import { Tabs } from "expo-router";
+// import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+// export default function TabLayout() {
+//   return (
+//     <Tabs
+//       screenOptions={{
+//         tabBarActiveTintColor: "#ffd33d",
+//         headerStyle: {
+//           backgroundColor: "#25292e",
+//         },
+//         headerShadowVisible: false,
+//         headerTintColor: "#fff",
+//         tabBarStyle: {
+//           backgroundColor: "#25292e",
+//         },
+//       }}
+//     >
+//       <Tabs.Screen
+//         name="index"
+//         options={{
+//           title: "Home",
+//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
+//             <Ionicons
+//               name={focused ? "home-sharp" : "home-outline"}
+//               color={color}
+//               size={24}
+//             />
+//           ),
+//         }}
+//       />
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+//       <Tabs.Screen
+//         name="indaex"
+//         options={{
+//           title: "Hoame",
+//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
+//             <Ionicons
+//               name={focused ? "home-sharp" : "home-outline"}
+//               color={color}
+//               size={24}
+//             />
+//           ),
+//         }}
+//       />
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+//       <Tabs.Screen
+//         name="about"
+//         options={{
+//           title: "About",
+//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
+//             <Ionicons
+//               name={
+//                 focused ? "information-circle" : "information-circle-outline"
+//               }
+//               color={color}
+//               size={24}
+//             />
+//           ),
+//         }}
+//       />
+      
+//     </Tabs>
+//   );
+// }
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+import { Drawer } from 'expo-router/drawer';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { View, Text, StyleSheet } from 'react-native';
 
-  if (!loaded) {
-    return null;
-  }
-
+function CustomDrawerContent(props: any) {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <DrawerContentScrollView {...props}>
+      {/* Cabeçalho personalizado */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Escalador</Text>
+        <Text style={styles.subtitle}>Bem-vindo!</Text>
+      </View>
+
+      {/* Itens padrão do menu */}
+      <DrawerItemList {...props} />
+    </DrawerContentScrollView>
   );
 }
+
+export default function Layout() {
+  return (
+    <Drawer
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerStyle: { backgroundColor: '#3B82F6' },
+        headerTintColor: '#fff',
+        drawerActiveBackgroundColor: '#60A5FA',
+        drawerActiveTintColor: '#fff',
+        drawerLabelStyle: { fontWeight: 'bold' },
+      }}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    padding: 20,
+    backgroundColor: '#60A5FA',
+    marginBottom: 20
+  },
+  title: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#fff',
+    marginTop: 4,
+  },
+})

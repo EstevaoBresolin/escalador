@@ -1,5 +1,5 @@
-import React from 'react';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect, useLayoutEffect  } from 'react';
+import { useRouter, useLocalSearchParams, useNavigation } from 'expo-router';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons, Entypo } from '@expo/vector-icons';
 
@@ -11,6 +11,13 @@ export default function HomeScreen() {
     { label: 'Restrições', rota: '/restricoes', icon: 'calendar-remove' },
     { label: 'Indicadores', rota: '/indicadores', icon: 'bar-chart' },
   ]
+
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Inicio', // título do header
+    });
+  }, [navigation]);
 
   const router = useRouter();
 

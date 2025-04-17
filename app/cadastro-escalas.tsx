@@ -1,95 +1,107 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text, TextInput, IconButton, Menu, Button, Provider } from 'react-native-paper';
+import React, { useState, useEffect, useLayoutEffect  } from 'react';
+import { View, StyleSheet, Platform, Alert  } from 'react-native';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Text, TextInput, IconButton, Button, Menu, Provider } from 'react-native-paper';
+import SeletorDeData from '../components/SelecionarData';
+import EventoPorData from '../components/SelecionarEvento';
+import Departamentos from '../components/SelecionarDepartamento';
+import Usuarios from '../components/Usuarios';
 
-const eventos = ['Culto Domingo', 'Culto Jovem', 'Encontro de Casais'];
-const departamentos = ['Louvor', 'Multimídia', 'Recepção', 'Diaconato'];
+const departamentosMock = [
+  { id: '1', nome: 'Louvor' },
+  { id: '2', nome: 'Infantil' },
+  { id: '3', nome: 'Jovens' },
+];
+
+const eventosMock = [
+  { id: '1', titulo: 'Culto da Família', data: '14/04/2025', hora: '14:00' },
+  { id: '2', titulo: 'Reunião Jovens', data: '14/04/2025', hora: '20:00'},
+  { id: '3', titulo: 'Ensaio Coral', data: '15/04/2025', hora: '18:00'},
+];
+
+const usuariosMock = [
+  { id: '1', nome: 'Jorge Jesus', idDoDepartamento: "2" },
+  { id: '2', nome: 'Pedro Henrique', idDoDepartamento: "2" },
+  { id: '3', nome: 'Wesley Da Silva', idDoDepartamento: "1" },
+]
+
+interface Evento {
+  id: string;
+  titulo: string;
+  data: string;
+  hora: string;
+}
+
+interface Departamento {
+  id: string;
+  nome: string;
+}
+
+interface Usuario {
+  id: string;
+  nome: string;
+  idDoDepartamento: string;
+}
 
 export default function CadastroEscalas() {
-  const [eventoSelecionado, setEventoSelecionado] = useState('');
-  const [departamentoSelecionado, setDepartamentoSelecionado] = useState('');
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [eventoSelecionado, setEventoSelecionado] = useState<Evento | null>(null);
+  const [departamentoSelecionado, setDepartamentoSelecionado] = useState<Departamento | null>(null);
+  const [usuariosSelecionados, setUsuariosSelecionados] = useState<Usuario[]>([]);
 
-  const [menuEventoVisible, setMenuEventoVisible] = useState(false);
-  const [menuDeptoVisible, setMenuDeptoVisible] = useState(false);
+  const Salvar = () => {
+    console.log("Evento Salvo")
+    console.log("Nome do Evento:", eventoSelecionado?.titulo)
+    console.log("Data:", eventoSelecionado?.data, " - ", eventoSelecionado?.hora )
+    console.log("Departamento:", departamentoSelecionado?.nome)
+    console.log("Pessoas: ", usuariosSelecionados)
+  }
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Cadastrar Escala', // título do header
+    });
+  }, [navigation]);
+
+  // const handleSubmit = () => {
+  //   if (selectedDate) {
+  //     Alert.alert('Data válida selecionada:', selectedDate);
+  //   } else {
+  //     Alert.alert('Erro', 'Por favor, insira uma data válida.');
+  //   }
+  // };
+
+  // const Botao = () => {
+  //   console.log(eventoSelecionado,"eventoSelecionado")
+  //   console.log(departamentoSelecionado,"departamentoSelecionado")
+  // }
 
   return (
     <Provider>
       <View style={styles.container}>
         <View style={styles.card}>
-          {/* <IconButton icon="home" size={24} onPress={() => {}} /> */}
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}> <Text style={{ color: '#5179EF' }}>Selecione o dia</Text></Text>
-            <TextInput
-              mode="outlined"
-              value={eventoSelecionado}
-              style={styles.textInput}
-              editable={false}
-              placeholder='Selecione a Data'
-              selectionColor='#5179EF'
-              right={<TextInput.Icon icon="menu-down" onPress={() => setMenuEventoVisible(true)} />}
-            />
-            <Menu
-              visible={menuEventoVisible}
-              onDismiss={() => setMenuEventoVisible(false)}
-              anchor={{ x: 10, y: 180 }}
-            >
-              {eventos.map((evento) => (
-                <Menu.Item
-                  key={evento}
-                  onPress={() => {
-                    setEventoSelecionado(evento);
-                    setMenuEventoVisible(false);
-                  }}
-                  title={evento}
-                />
-              ))}
-            </Menu>
+        <Text style={styles.title}>Informe a data:</Text>
+        <SeletorDeData onDateChange={setSelectedDate} />
+        {selectedDate != null && (
+          <View style={styles.btnEventoDepartamento}>
+            <EventoPorData eventos={eventosMock} dataSelecionada={selectedDate} onChange={(evento) => setEventoSelecionado(evento)}/>
+              {eventoSelecionado && (
+                <Departamentos departamentos={departamentosMock} onChange={(dep) => setDepartamentoSelecionado(dep)} />
+              )}
+              
           </View>
+        )}
+          {departamentoSelecionado && (
+            <Usuarios usuarios={usuariosMock} departamentoIdSelecionado={departamentoSelecionado.id} onChange={(lista : any) => setUsuariosSelecionados(lista)} />
+            // <Usuarios usuarios={usuariosMock} departamentoIdSelecionado={departamentoSelecionado.id} onChange={(lista) => setUsuariosSelecionados(lista)} />
+          )}
+          {eventoSelecionado && departamentoSelecionado &&(
+            <Button labelStyle={{ color: '#fff' }} style={styles.btnSalvar} onPress={() => Salvar()}>Salvar</Button>
+          )}
 
-          <View style={styles.selectRow}>
-            <View style={styles.selectBox}>
-              <Text style={styles.label}>Evento</Text>
-              <Button
-                mode="outlined"
-                onPress={() => setMenuEventoVisible(true)}
-                style={styles.button}
-                contentStyle={{ justifyContent: 'space-between' }}
-                icon="menu-down"
-              >
-                {eventoSelecionado || 'Selecione'}
-              </Button>
-            </View>
-
-            <View style={styles.selectBox}>
-              <Text style={styles.label}>Departamento</Text>
-              <Button
-                mode="outlined"
-                onPress={() => setMenuDeptoVisible(true)}
-                style={styles.button}
-                contentStyle={{ justifyContent: 'space-between' }}
-                icon="menu-down"
-              >
-                {departamentoSelecionado || 'Selecione'}
-              </Button>
-              <Menu
-                visible={menuDeptoVisible}
-                onDismiss={() => setMenuDeptoVisible(false)}
-                anchor={{ x: 220, y: 180 }}
-              >
-                {departamentos.map((d) => (
-                  <Menu.Item
-                    key={d}
-                    onPress={() => {
-                      setDepartamentoSelecionado(d);
-                      setMenuDeptoVisible(false);
-                    }}
-                    title={d}
-                  />
-                ))}
-              </Menu>
-            </View>
-          </View>
         </View>
       </View>
     </Provider>
@@ -104,9 +116,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   card: {
-    // backgroundColor: '#fff',
-    // borderRadius: 16,
-    // padding: 20,
     flex: 1,
   },
   inputContainer: {
@@ -115,7 +124,7 @@ const styles = StyleSheet.create({
   textInput: {
     // borderBottomWidth: 1,
     backgroundColor: '#fff',
-    borderColor: '#5179EF,'
+    borderColor: '#5179EF',
   },
   label: {
     fontWeight: '600',
@@ -135,4 +144,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 4,
   },
+  title: {
+    color: "black",
+    fontSize: 16,
+  },
+  dateText: {
+    fontSize: 18,
+    color: 'green',
+  },
+  btnEventoDepartamento: {
+    flexDirection: 'row',
+    gap: 5,
+    justifyContent: 'space-evenly',
+  },
+  btnSalvar: {
+    marginTop: 15,
+    borderRadius: 8,
+    backgroundColor: '#9ED9F8',
+    color: '#fff',
+  }
 });

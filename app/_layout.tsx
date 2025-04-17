@@ -1,71 +1,5 @@
-// import { Tabs } from "expo-router";
-// import Ionicons from "@expo/vector-icons/Ionicons";
-
-// export default function TabLayout() {
-//   return (
-//     <Tabs
-//       screenOptions={{
-//         tabBarActiveTintColor: "#ffd33d",
-//         headerStyle: {
-//           backgroundColor: "#25292e",
-//         },
-//         headerShadowVisible: false,
-//         headerTintColor: "#fff",
-//         tabBarStyle: {
-//           backgroundColor: "#25292e",
-//         },
-//       }}
-//     >
-//       <Tabs.Screen
-//         name="index"
-//         options={{
-//           title: "Home",
-//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
-//             <Ionicons
-//               name={focused ? "home-sharp" : "home-outline"}
-//               color={color}
-//               size={24}
-//             />
-//           ),
-//         }}
-//       />
-
-//       <Tabs.Screen
-//         name="indaex"
-//         options={{
-//           title: "Hoame",
-//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
-//             <Ionicons
-//               name={focused ? "home-sharp" : "home-outline"}
-//               color={color}
-//               size={24}
-//             />
-//           ),
-//         }}
-//       />
-
-//       <Tabs.Screen
-//         name="about"
-//         options={{
-//           title: "About",
-//           tabBarIcon: ({ color, focused }: { color: string; focused: boolean })  => (
-//             <Ionicons
-//               name={
-//                 focused ? "information-circle" : "information-circle-outline"
-//               }
-//               color={color}
-//               size={24}
-//             />
-//           ),
-//         }}
-//       />
-      
-//     </Tabs>
-//   );
-// }
-
-import { Drawer } from 'expo-router/drawer';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { Drawer,   } from 'expo-router/drawer';
+import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
 
 function CustomDrawerContent(props: any) {
@@ -77,8 +11,14 @@ function CustomDrawerContent(props: any) {
         <Text style={styles.subtitle}>Bem-vindo!</Text>
       </View>
 
-      {/* Itens padrão do menu */}
-      <DrawerItemList {...props} />
+      <DrawerItem label="Início" onPress={() => props.navigation.navigate('index')} />
+
+      {/* <DrawerItem label="Sobre" onPress={() => props.navigation.navigate('about')} /> */}
+
+      <DrawerItem label="Cadastrar Escala" onPress={() => props.navigation.navigate('cadastro-escalas')} />
+
+      <DrawerItem label="Consultar Escalas" onPress={() => props.navigation.navigate('consulta-escalas')} />
+
     </DrawerContentScrollView>
   );
 }
@@ -102,7 +42,8 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     backgroundColor: '#60A5FA',
-    marginBottom: 20
+    marginBottom: 20,
+    borderTopRightRadius: 8,
   },
   title: {
     fontSize: 18,
